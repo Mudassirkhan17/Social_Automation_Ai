@@ -95,7 +95,6 @@ try:
 
     time.sleep(5)
     # Wait for the DM list to load
-    time.sleep(3)
 
     # Find all DM items
     dm_items = driver.find_elements(By.XPATH, "//div[@role='row' or @role='button']")
@@ -112,6 +111,37 @@ try:
             first_chat.click()
             print(f"Clicked on DM item at index {first_chat_index}: {first_chat.text[:50]}")
             time.sleep(2)
+            # Type 'hi' in the message box and send
+            try:
+                # Try textarea first
+                try:
+                    textarea = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.TAG_NAME, 'textarea'))
+                    )
+                    print("Found textarea for message input.")
+                except Exception:
+                    # Try contenteditable div (Instagram sometimes uses this)
+                    textarea = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true']"))
+                    )
+                    print("Found contenteditable div for message input.")
+
+                textarea.click()
+                textarea.send_keys('hi')
+                textarea.send_keys(Keys.RETURN)
+                print("Sent 'hi' to the first chat.")
+                time.sleep(2)
+            except Exception as e:
+                print("Could not send 'hi' to the first chat:", e)
+                # Debug: print all textareas and contenteditable divs
+                textareas = driver.find_elements(By.TAG_NAME, 'textarea')
+                print(f"Found {len(textareas)} textareas.")
+                for i, ta in enumerate(textareas):
+                    print(f"Textarea {i}: displayed={ta.is_displayed()}, enabled={ta.is_enabled()}")
+                divs = driver.find_elements(By.XPATH, "//div[@contenteditable='true']")
+                print(f"Found {len(divs)} contenteditable divs.")
+                for i, d in enumerate(divs):
+                    print(f"Div {i}: displayed={d.is_displayed()}, enabled={d.is_enabled()}, text={d.text[:30]}")
         else:
             print(f"First chat at index {first_chat_index} is not displayed.")
     except Exception as e:
