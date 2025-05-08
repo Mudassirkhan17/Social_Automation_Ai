@@ -66,6 +66,32 @@ try:
         pass
 
     print('Logged in to Instagram. You can now give further instructions.')
+    
+    # Wait 10 seconds before proceeding
+    time.sleep(10)
+    
+    # Find and click the 'Messages' button in the sidebar
+    try:
+        messages_btn = driver.find_element(By.XPATH, "//a[.//span[text()='Messages']]")
+        messages_btn.click()
+        print("Clicked on the 'Messages' button.")
+    except Exception as e:
+        print("Could not find or click the 'Messages' button:", e)
+    
+
+    time.sleep(1)
+    
+    # After navigating to DMs, handle the 'Turn on Notifications' popup
+    try:
+        notif_btn = WebDriverWait(driver, 4).until(
+            EC.element_to_be_clickable((By.XPATH, "//*[text()='Not Now' or text()='Not now']"))
+        )
+        notif_btn.click()
+        print("Clicked 'Not Now' on notifications popup.")
+        time.sleep(2)
+    except Exception as e:
+        print("No 'Not Now' button found for notifications popup or could not click it:", e)
+    
     input('Press Enter to exit...')
 finally:
     driver.quit() 
