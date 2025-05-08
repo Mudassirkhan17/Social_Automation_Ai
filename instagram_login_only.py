@@ -68,7 +68,7 @@ try:
     print('Logged in to Instagram. You can now give further instructions.')
     
     # Wait 10 seconds before proceeding
-    time.sleep(10)
+    time.sleep(4)
     
     # Find and click the 'Messages' button in the sidebar
     try:
@@ -91,7 +91,36 @@ try:
         time.sleep(2)
     except Exception as e:
         print("No 'Not Now' button found for notifications popup or could not click it:", e)
-    
+
+
+    time.sleep(5)
+    # Wait for the DM list to load
+    time.sleep(3)
+
+    # Find all DM items
+    dm_items = driver.find_elements(By.XPATH, "//div[@role='row' or @role='button']")
+    print(f"Found {len(dm_items)} DM items with role='row' or 'button'.")
+    for i, item in enumerate(dm_items):
+        print(f"{i}: tag={item.tag_name}, displayed={item.is_displayed()}, text={item.text[:50]}")
+
+    # Click the first real chat (skip non-chat items, usually first 3)
+    try:
+        # Adjust the index if Instagram changes layout; here, index 3 is the first chat
+        first_chat_index = 3
+        first_chat = dm_items[first_chat_index]
+        if first_chat.is_displayed():
+            first_chat.click()
+            print(f"Clicked on DM item at index {first_chat_index}: {first_chat.text[:50]}")
+            time.sleep(2)
+        else:
+            print(f"First chat at index {first_chat_index} is not displayed.")
+    except Exception as e:
+        print("Could not open the first message in the DM list:", e)
+
+    # Wait for 10 seconds before proceeding
+    time.sleep(10)
+
+
     input('Press Enter to exit...')
 finally:
     driver.quit() 
